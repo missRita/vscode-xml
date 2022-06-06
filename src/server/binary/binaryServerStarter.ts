@@ -12,7 +12,7 @@ import { ClientCommandConstants } from '../../commands/commandConstants';
 import { getProxySettings, getProxySettingsAsEnvironmentVariables, ProxySettings } from '../../settings/proxySettings';
 import { getXMLConfiguration } from "../../settings/settings";
 import { Telemetry } from '../../telemetry';
-import { addTrustedHash, getTrustedHashes } from './binaryHashManager';
+import { getTrustedHashes } from './binaryHashManager';
 import glob = require('glob');
 
 const HTTPS_PATTERN = /^https:\/\//;
@@ -29,6 +29,7 @@ export const ABORTED_ERROR: Error = new Error('XML Language Server download canc
  */
 export async function prepareBinaryExecutable(context: ExtensionContext): Promise<Executable> {
   const binaryArgs: string = getXMLConfiguration().get("server.binary.args");
+  
   let binaryExecutable: Executable;
   return getServerBinaryPath()
     .then((binaryPath: string) => {
@@ -60,21 +61,6 @@ export async function prepareBinaryExecutable(context: ExtensionContext): Promis
  * @throws If the LemMinX binary can't be located or downloaded
  */
 async function getServerBinaryPath(): Promise<string> {
-  const config: WorkspaceConfiguration = getXMLConfiguration();
-  const binaryPath: string = config.get("server.binary.path");
-  if (binaryPath) {
-    if (fs.existsSync(binaryPath)) {
-      try {
-        // checks read/execute permissions
-        fs.accessSync(binaryPath, fs.constants.R_OK | fs.constants.X_OK)
-        return Promise.resolve(binaryPath);
-      } catch(e) {
-        window.showErrorMessage('Permission(s) denied for the specified XML language server binary. Using the default binary...');
-      }
-    } else {
-      window.showErrorMessage('The specified XML language server binary could not be found. Using the default binary...');
-    }
-  }
   const server_home: string = path.resolve(__dirname, '../server');
   let binaries: Array<string> = glob.sync(`**/${getServerBinaryNameWithoutExtension()}*`, { cwd: server_home });
   binaries = binaries.filter((path) => { return !JAR_ZIP_AND_HASH_REJECTOR.test(path) });
@@ -82,7 +68,7 @@ async function getServerBinaryPath(): Promise<string> {
     return Promise.resolve(path.resolve(server_home, binaries[0]));
   }
   // Download it, then return the downloaded binary's location
-  return downloadBinary();
+  //return downloadBinary();
 }
 
 /**
@@ -179,14 +165,8 @@ async function checkBinaryHash(binaryPath: string): Promise<boolean> {
       if (getTrustedHashes().includes(hashDigest)) {
         return true;
       }
-      if (!fs.existsSync(expectedHashPath)) {
-        return askIfTrustsUnrecognizedBinary(hashDigest, binaryPath);
-      }
-      const expectedHash = fs.readFileSync(expectedHashPath).toString('utf-8').toLowerCase().split(' ')[0].trim();
-      if (hashDigest === expectedHash) {
-        return true;
-      }
-      return askIfTrustsUnrecognizedBinary(hashDigest, binaryPath);
+
+      return false;
     })
     .catch((err: any) => {
       return false;
@@ -242,26 +222,6 @@ function getServerBinaryExtension(): string {
  */
 function getServerBinaryDownloadUrl(): string {
   return extensions.getExtension("redhat.vscode-xml").packageJSON['binaryServerDownloadUrl'][getServerBinaryNameWithoutExtension().substring(8)] as string;
-}
-
-/**
- * Returns true if the user decides to trust the binary, and false if they ignore the message or don't trust the binary
- *
- * @returns true if the user decides to trust the binary, and false if they ignore the message or don't trust the binary
- */
-async function askIfTrustsUnrecognizedBinary(hash: string, path: string): Promise<boolean> {
-  const YES = 'Yes';
-  const NO = 'No';
-  return window.showErrorMessage(`The server binary ${path} is not trusted. `
-      + 'Running the file poses a threat to your system\'s security. '
-      + 'Do you want to add this binary to the list of trusted binaries and run it?', YES, NO)
-    .then((val: string) => {
-      if (val === YES) {
-        addTrustedHash(hash);
-        return true;
-      }
-      return false;
-    });
 }
 
 /**
@@ -343,7 +303,7 @@ async function acceptZipDownloadResponse(response: http.IncomingMessage): Promis
         reject(capturedError);
         return;
       }
-      resolve();
+      resolve(ABORTED_ERROR);
     });
     response.on('aborted', () => {
       capturedError = ABORTED_ERROR;

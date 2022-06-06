@@ -33,9 +33,6 @@ let languageClient: LanguageClient;
 export async function activate(context: ExtensionContext): Promise<XMLExtensionApi> {
 
   await Telemetry.startTelemetry(context);
-  Telemetry.sendTelemetry(Telemetry.SETTINGS_EVT, {
-    preferBinary: (getXMLConfiguration()['server']['preferBinary'] as boolean)
-  });
 
   registerClientOnlyCommands(context);
 
@@ -56,6 +53,11 @@ export async function activate(context: ExtensionContext): Promise<XMLExtensionA
   const logfile = path.resolve(storagePath + '/lemminx.log');
   await fs.ensureDir(context.globalStorageUri.fsPath);
   await cleanUpHeapDumps(context);
+
+  //getXMLConfiguration().update("server.binary.args", "-Djdk.xml.entityExpansionLimit=100000");
+  //getXMLConfiguration().update("catalogs", "/home/serman/Downloads/Telegram Desktop/schema/v1.3/catalog_dtd.xml");
+  //getXMLConfiguration().update("validation.resolveExternalEntities", true);
+
 
   const externalXmlSettings: ExternalXmlSettings = new ExternalXmlSettings();
 

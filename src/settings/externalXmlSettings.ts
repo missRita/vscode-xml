@@ -9,7 +9,7 @@ export class ExternalXmlSettings {
   private _xmlFileAssociations: XMLFileAssociation[]
 
   constructor() {
-    this._xmlCatalogs = [];
+    this._xmlCatalogs = [];//["/home/serman/Downloads/Telegram Desktop/schema/v1.3/catalog_dtd.xml"];
     this._xmlFileAssociations = [];
   }
 

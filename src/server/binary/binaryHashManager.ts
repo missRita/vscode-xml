@@ -1,6 +1,3 @@
-import { ConfigurationTarget, workspace } from "vscode";
-
-const TRUSTED_HASHES_SETTING_ID = 'xml.server.binary.trustedHashes';
 
 /**
  * Returns the list of user trusted binary hashes
@@ -8,21 +5,10 @@ const TRUSTED_HASHES_SETTING_ID = 'xml.server.binary.trustedHashes';
  * @returns the list of user trusted binary hashes
  */
 export function getTrustedHashes(): string[] {
-  const trustedHashesValue = workspace.getConfiguration().inspect<string>(TRUSTED_HASHES_SETTING_ID).globalValue;
-  if (!Array.isArray(trustedHashesValue)) {
-    return [];
-  }
-  return trustedHashesValue as string[];
+
+  let arr1: string[] = ["2ba0c8c69c7451fd72f587eb68eeaf9ade463bf1da8ee500fbc50db4a0d75669",
+   "233988bfda2618900c3ed7f8c264827b42e1e0ddc5c55669f585b6a9e8f5315e"];
+
+   return arr1;
 }
 
-
-/**
- * Add a new hash to the list of trusted binary hashes
- *
- * @param hash The hash to add to the list of trusted binary hashes
- */
-export function addTrustedHash(hash: string): void {
-  const trustedHashes = getTrustedHashes();
-  trustedHashes.push(hash);
-  workspace.getConfiguration().update(TRUSTED_HASHES_SETTING_ID, trustedHashes, ConfigurationTarget.Global);
-}

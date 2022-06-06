@@ -214,7 +214,6 @@ export function getXMLSettings(javaHome: string | undefined, logfile: string, ex
   }
   xml['xml']['logs']['file'] = logfile;
   xml['xml']['useCache'] = true;
-  xml['xml']['java']['home'] = javaHome;
   xml['xml']['format']['trimFinalNewlines'] = workspace.getConfiguration('files').get('trimFinalNewlines', true);
   xml['xml']['format']['trimTrailingWhitespace'] = workspace.getConfiguration('files').get('trimTrailingWhitespace', false);
   xml['xml']['format']['insertFinalNewline'] = workspace.getConfiguration('files').get('insertFinalNewline', false);

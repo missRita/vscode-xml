@@ -1,8 +1,8 @@
 {
-  "name": "vscode-xml",
-  "displayName": "XML",
+  "name": "vscode-xml2",
+  "displayName": "XML2",
   "description": "XML Language Support by Red Hat",
-  "version": "0.21.0",
+  "version": "0.21.2",
   "author": "Red Hat",
   "publisher": "redhat",
   "icon": "icons/icon128.png",
@@ -28,7 +28,6 @@
       "supported": "limited",
       "restrictedConfigurations": [
         "xml.extension.jars",
-        "xml.java.home",
         "xml.server.vmargs",
         "xml.validation.resolveExternalEntities",
         "xml.downloadExternalResources.enabled"
@@ -110,15 +109,6 @@
             "telemetry"
           ]
         },
-        "xml.java.home": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "default": null,
-          "markdownDescription": "Specifies the folder path to the JDK (8 or more recent) used to launch the XML Language Server if the Java server is being run.\nOn Windows, backslashes must be escaped, i.e.\n`\"xml.java.home\": \"C:\\\\Program Files\\\\Java\\\\jdk1.8.0_161\"`. For more information, please refer to [this document](command:xml.open.docs?%5B%7B%22page%22%3A%22Preferences%22%2C%22section%22%3A%22java-home%22%7D%5D).",
-          "scope": "window"
-        },
         "xml.server.vmargs": {
           "type": [
             "string",
@@ -134,36 +124,10 @@
           "markdownDescription": "Set a custom folder path for cached XML Schemas. An absolute path is expected, although the `~` prefix (for the user home directory) is supported. Default is `~/.lemminx`. Please refer to the [cache documentation](command:xml.open.docs?%5B%7B%22page%22%3A%22Preferences%22%2C%22section%22%3A%22server-cache-path%22%7D%5D) for more information.",
           "scope": "window"
         },
-        "xml.server.preferBinary": {
-          "type": "boolean",
-          "default": false,
-          "description": "By default, vscode-xml tries to run the Java version of the XML Language Server. If no Java is detected, vscode-xml runs the binary XML language server. When this setting is enabled, the binary will also be used even if Java is installed. If there are additions to the XML Language Server provided by other extensions, Java will be used (if available) even if this setting is enabled.",
-          "scope": "window"
-        },
-        "xml.server.silenceExtensionWarning": {
-          "type": "boolean",
-          "default": false,
-          "description": "The XML Language server allows other VSCode extensions to extend its functionality. It requires Java-specific features in order to do this. If extensions to the XML language server are detected, but a binary XML language server is run, a warning will appear. This setting can be used to disable this warning.",
-          "scope": "window"
-        },
-        "xml.server.binary.path": {
-          "type": "string",
-          "description": "Specify the path of a custom binary version of the XML server to use. A binary will be downloaded if this is not set.",
-          "scope": "machine"
-        },
         "xml.server.binary.args": {
           "type": "string",
           "markdownDescription": "Command line arguments to supply to the binary server when the binary server is being used. Takes into effect after relaunching VSCode. Please refer to [this website for the available options](https://www.graalvm.org/reference-manual/native-image/HostedvsRuntimeOptions/). For example, you can increase the maximum memory that the server can use to 1 GB by adding `-Xmx1g`",
           "scope": "machine"
-        },
-        "xml.server.binary.trustedHashes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "markdownDescription": "List of the SHA256 hashes of trusted copies of the lemminx (XML language server) binary. See [here](command:xml.open.docs?%5B%7B%22page%22%3A%22Preferences%22%2C%22section%22%3A%22trusted-binary-hashes%22%7D%5D) for more information",
-          "default": [],
-          "scope": "application"
         },
         "xml.trace.server": {
           "type": "string",
