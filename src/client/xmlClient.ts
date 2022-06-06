@@ -1,4 +1,3 @@
-import { TelemetryEvent } from '@redhat-developer/vscode-redhat-telemetry/lib';
 import { commands, ExtensionContext, extensions, Position, TextDocument, TextEditor, Uri, window, workspace } from 'vscode';
 import { Command, ConfigurationParams, ConfigurationRequest, DidChangeConfigurationNotification, ExecuteCommandParams, LanguageClientOptions, MessageType, NotificationType, RequestType, RevealOutputChannelOn, TextDocumentPositionParams } from "vscode-languageclient";
 import { Executable, LanguageClient } from 'vscode-languageclient/node';
@@ -10,7 +9,6 @@ import { RequirementsData } from "../server/requirements";
 import { ExternalXmlSettings } from "../settings/externalXmlSettings";
 import { getXMLConfiguration, getXMLSettings, onConfigurationChange, subscribeJDKChangeConfiguration } from "../settings/settings";
 import { containsVariableReferenceToCurrentFile } from '../settings/variableSubstitution';
-import { Telemetry } from '../telemetry';
 import { ClientErrorHandler } from './clientErrorHandler';
 import { activateTagClosing, AutoCloseResult } from './tagClosing';
 
@@ -39,10 +37,6 @@ export async function startLanguageClient(context: ExtensionContext, executable:
 
   const languageClientOptions: LanguageClientOptions = getLanguageClientOptions(logfile, externalXmlSettings, requirementsData, context);
   languageClient = new LanguageClient('xml', 'XML Support', executable, languageClientOptions);
-
-  languageClient.onTelemetry(async (e: TelemetryEvent) => {
-    return Telemetry.sendTelemetry(e.name, e.properties);
-  });
 
   context.subscriptions.push(languageClient.start());
   await languageClient.onReady();

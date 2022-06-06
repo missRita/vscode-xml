@@ -26,13 +26,10 @@ import * as requirements from './server/requirements';
 import { prepareExecutable } from './server/serverStarter';
 import { ExternalXmlSettings } from "./settings/externalXmlSettings";
 import { getXMLConfiguration } from './settings/settings';
-import { Telemetry } from './telemetry';
 
 let languageClient: LanguageClient;
 
 export async function activate(context: ExtensionContext): Promise<XMLExtensionApi> {
-
-  await Telemetry.startTelemetry(context);
 
   registerClientOnlyCommands(context);
 
@@ -62,7 +59,7 @@ export async function activate(context: ExtensionContext): Promise<XMLExtensionA
   const externalXmlSettings: ExternalXmlSettings = new ExternalXmlSettings();
 
   const serverOptions: Executable = await prepareExecutable(
-    requirementsData, collectXmlJavaExtensions(extensions.all, getXMLConfiguration().get("extension.jars", [])), context);
+    requirementsData, collectXmlJavaExtensions(extensions.all, []), context);
 
   languageClient = await startLanguageClient(context, serverOptions, logfile, externalXmlSettings, requirementsData);
 

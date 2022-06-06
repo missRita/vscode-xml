@@ -3,7 +3,6 @@ import { commands, ExtensionContext, window, workspace } from "vscode";
 import { CloseAction, ErrorAction, ErrorHandler, Message } from "vscode-languageclient";
 import { ClientCommandConstants } from "../commands/commandConstants";
 import { HEAP_DUMP_LOCATION } from "../server/java/jvmArguments";
-import { Telemetry } from "../telemetry";
 import glob = require("glob");
 
 /**
@@ -41,7 +40,6 @@ export class ClientErrorHandler implements ErrorHandler {
       // then they will be able to read the heap dumps,
       // since they aren't immediately deleted.
       cleanUpHeapDumps(this.context);
-      Telemetry.sendTelemetry(Telemetry.JAVA_OOM_EVT, { 'jvm.xmx': getXmxFromSettings() });
       showOOMMessage();
       return CloseAction.DoNotRestart;
     }
@@ -80,7 +78,6 @@ async function showOOMMessage(): Promise<void> {
   const result = await window.showErrorMessage('The XML Language Server crashed due to an Out Of Memory Error, and will not be restarted. ', //
     DOCS);
   if (result === DOCS) {
-    Telemetry.sendTelemetry(Telemetry.OPEN_OOM_DOCS_EVT);
     await commands.executeCommand(ClientCommandConstants.OPEN_DOCS,
       {
         page: 'Troubleshooting',
