@@ -2,7 +2,7 @@ import * as fs from "fs-extra";
 import { commands, ExtensionContext, window, workspace } from "vscode";
 import { CloseAction, ErrorAction, ErrorHandler, Message } from "vscode-languageclient";
 import { ClientCommandConstants } from "../commands/commandConstants";
-import { HEAP_DUMP_LOCATION } from "../server/java/jvmArguments";
+
 import glob = require("glob");
 
 /**
@@ -23,7 +23,7 @@ export class ClientErrorHandler implements ErrorHandler {
     this.name = name;
     this.restarts = [];
     this.context = context;
-    this.heapDumpFolder = getHeapDumpFolderFromSettings() || context.globalStorageUri.fsPath;
+    this.heapDumpFolder = context.globalStorageUri.fsPath;
   }
 
   error(_error: Error, _message: Message, _count: number): ErrorAction {
@@ -85,22 +85,6 @@ async function showOOMMessage(): Promise<void> {
       }
     );
   }
-}
-
-const HEAP_DUMP_FOLDER_EXTRACTOR = new RegExp(`${HEAP_DUMP_LOCATION}(?:'([^']+)'|"([^"]+)"|([^\\s]+))`);
-
-/**
- * Returns the heap dump folder defined in the user's preferences, or undefined if the user does not set the heap dump folder
- *
- * @returns the heap dump folder defined in the user's preferences, or undefined if the user does not set the heap dump folder
- */
-function getHeapDumpFolderFromSettings(): string {
-  const jvmArgs: string = workspace.getConfiguration('xml.server').get('vmargs');
-  const results = HEAP_DUMP_FOLDER_EXTRACTOR.exec(jvmArgs);
-  if (!results || !results[0]) {
-    return undefined;
-  }
-  return results[1] || results[2] || results[3];
 }
 
 const XMX_EXTRACTOR = /-Xmx([^\s]+)/;

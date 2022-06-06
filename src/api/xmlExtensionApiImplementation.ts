@@ -1,6 +1,5 @@
 import { DidChangeConfigurationNotification } from "vscode-languageclient";
 import { LanguageClient } from "vscode-languageclient/node";
-import { RequirementsData } from "../server/requirements";
 import { ExternalXmlSettings } from "../settings/externalXmlSettings";
 import { getXMLSettings, onConfigurationChange } from "../settings/settings";
 import { XMLExtensionApi, XMLFileAssociation } from "./xmlExtensionApi";
@@ -14,7 +13,7 @@ import { XMLExtensionApi, XMLFileAssociation } from "./xmlExtensionApi";
  * @param requirementsData
  * @return the implementation of the vscode-xml extension API
  */
-export function getXmlExtensionApiImplementation(languageClient: LanguageClient, logfile: string, externalXmlSettings: ExternalXmlSettings, requirementsData: RequirementsData): XMLExtensionApi {
+export function getXmlExtensionApiImplementation(languageClient: LanguageClient, logfile: string, externalXmlSettings: ExternalXmlSettings): XMLExtensionApi {
   return {
     // add API set catalogs to internal memory
     addXMLCatalogs: (catalogs: string[]) => {
@@ -24,7 +23,7 @@ export function getXmlExtensionApiImplementation(languageClient: LanguageClient,
           externalXmlCatalogs.push(element);
         }
       });
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     },
     // remove API set catalogs to internal memory
@@ -36,7 +35,7 @@ export function getXmlExtensionApiImplementation(languageClient: LanguageClient,
           externalXmlCatalogs.splice(itemIndex, 1);
         }
       });
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     },
     // add API set fileAssociations to internal memory
@@ -47,7 +46,7 @@ export function getXmlExtensionApiImplementation(languageClient: LanguageClient,
           externalfileAssociations.push(element);
         }
       });
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     },
     // remove API set fileAssociations to internal memory
@@ -59,7 +58,7 @@ export function getXmlExtensionApiImplementation(languageClient: LanguageClient,
           externalfileAssociations.splice(itemIndex, 1);
         }
       });
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     }
   } as XMLExtensionApi;

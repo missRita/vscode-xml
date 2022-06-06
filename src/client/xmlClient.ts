@@ -5,7 +5,6 @@ import { XMLFileAssociation } from '../api/xmlExtensionApi';
 import { ServerCommandConstants } from '../commands/commandConstants';
 import { registerClientServerCommands } from '../commands/registerCommands';
 import { onExtensionChange } from '../plugin';
-import { RequirementsData } from "../server/requirements";
 import { ExternalXmlSettings } from "../settings/externalXmlSettings";
 import { getXMLConfiguration, getXMLSettings, onConfigurationChange, subscribeJDKChangeConfiguration } from "../settings/settings";
 import { containsVariableReferenceToCurrentFile } from '../settings/variableSubstitution';
@@ -33,9 +32,9 @@ namespace ActionableNotification {
 
 let languageClient: LanguageClient;
 
-export async function startLanguageClient(context: ExtensionContext, executable: Executable, logfile: string, externalXmlSettings: ExternalXmlSettings, requirementsData: RequirementsData): Promise<LanguageClient> {
+export async function startLanguageClient(context: ExtensionContext, executable: Executable, logfile: string, externalXmlSettings: ExternalXmlSettings): Promise<LanguageClient> {
 
-  const languageClientOptions: LanguageClientOptions = getLanguageClientOptions(logfile, externalXmlSettings, requirementsData, context);
+  const languageClientOptions: LanguageClientOptions = getLanguageClientOptions(logfile, externalXmlSettings, context);
   languageClient = new LanguageClient('xml', 'XML Support', executable, languageClientOptions);
 
   context.subscriptions.push(languageClient.start());
@@ -92,7 +91,7 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   // and send the updated settings to the server
   context.subscriptions.push(window.onDidChangeActiveTextEditor(() => {
     if (containsVariableReferenceToCurrentFile(getXMLConfiguration().get('fileAssociations') as XMLFileAssociation[])) {
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     }
   }));
@@ -100,7 +99,7 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   const onDidGrantWorkspaceTrust = (workspace as any).onDidGrantWorkspaceTrust;
   if (onDidGrantWorkspaceTrust !== undefined) {
     context.subscriptions.push(onDidGrantWorkspaceTrust(() => {
-      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+      languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       workspace.getConfiguration('xml').update('downloadExternalResources.enabled', true); //set back to default setting
     }));
   }
@@ -111,7 +110,6 @@ export async function startLanguageClient(context: ExtensionContext, executable:
 function getLanguageClientOptions(
     logfile: string,
     externalXmlSettings: ExternalXmlSettings,
-    requirementsData: RequirementsData,
     context: ExtensionContext): LanguageClientOptions {
   return {
     // Register the server for xml and xsl
@@ -124,7 +122,7 @@ function getLanguageClientOptions(
     revealOutputChannelOn: RevealOutputChannelOn.Never,
     //wrap with key 'settings' so it can be handled same a DidChangeConfiguration
     initializationOptions: {
-      settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings),
+      settings: getXMLSettings(logfile, externalXmlSettings),
       extendedClientCapabilities: {
         codeLens: {
           codeLensKind: {
@@ -149,7 +147,7 @@ function getLanguageClientOptions(
     middleware: {
       workspace: {
         didChangeConfiguration: () => {
-          languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(requirementsData.java_home, logfile, externalXmlSettings) });
+          languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
           onConfigurationChange();
         }
       }

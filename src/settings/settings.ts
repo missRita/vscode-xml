@@ -185,7 +185,7 @@ export function getJavaagentFlag(vmargs) {
  *            'xml': {...}
  *          }
  */
-export function getXMLSettings(javaHome: string | undefined, logfile: string, externalXmlSettings: any): JSON {
+export function getXMLSettings(logfile: string, externalXmlSettings: any): JSON {
   let configXML = workspace.getConfiguration().get('xml');
   let xml;
   if (!configXML) { //Set default preferences if not provided
