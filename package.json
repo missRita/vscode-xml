@@ -1,8 +1,8 @@
 {
   "name": "vscode-xml2",
   "displayName": "XML2",
-  "description": "XML Language Support by Red Hat",
-  "version": "0.21.3",
+  "description": "Dita support",
+  "version": "0.21.5",
   "author": "User",
   "publisher": "User",
   "icon": "icons/dita_icon.png",

@@ -6,9 +6,12 @@
  */
 export function getTrustedHashes(): string[] {
 
-  let arr1: string[] = ["2ba0c8c69c7451fd72f587eb68eeaf9ade463bf1da8ee500fbc50db4a0d75669",
-   "233988bfda2618900c3ed7f8c264827b42e1e0ddc5c55669f585b6a9e8f5315e"];
+  let arr1: string[] = [
+    "ce856a366bacd3957d1fed38be304f2e3ebbde854af4b23e9ebad62bead30632",
+    "1d288f85eb4a00d80ca30238c013cf8683337a0c21206e69db24c6d1dac1a641",
+    "86730bbd731387f777bdb51186bb18da87ee7e0641fabc78edb3672eb4b08486",
+  ];
 
-   return arr1;
+  return arr1;
 }
 

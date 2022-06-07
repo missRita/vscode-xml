@@ -40,11 +40,6 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   context.subscriptions.push(languageClient.start());
   await languageClient.onReady();
 
-  // ---
-
-  //Detect JDK configuration changes
-  context.subscriptions.push(subscribeJDKChangeConfiguration());
-
   setupActionableNotificationListener(languageClient);
 
   // Handler for 'xml/executeClientCommand` request message that executes a command on the client
@@ -61,12 +56,6 @@ export async function startLanguageClient(context: ExtensionContext, executable:
     return text;
   };
   context.subscriptions.push(activateTagClosing(tagProvider, { xml: true, xsl: true }, ServerCommandConstants.AUTO_CLOSE_TAGS));
-
-  if (extensions.onDidChange) {// Theia doesn't support this API yet
-    context.subscriptions.push(extensions.onDidChange(() => {
-      onExtensionChange(extensions.all, getXMLConfiguration().get("extension.jars", []));
-    }));
-  }
 
   // Copied from:
   // https://github.com/redhat-developer/vscode-java/pull/1081/files
@@ -91,6 +80,7 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   // and send the updated settings to the server
   context.subscriptions.push(window.onDidChangeActiveTextEditor(() => {
     if (containsVariableReferenceToCurrentFile(getXMLConfiguration().get('fileAssociations') as XMLFileAssociation[])) {
+      console.log('onDidChangeActiveTextEditor');
       languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       onConfigurationChange();
     }
@@ -99,6 +89,7 @@ export async function startLanguageClient(context: ExtensionContext, executable:
   const onDidGrantWorkspaceTrust = (workspace as any).onDidGrantWorkspaceTrust;
   if (onDidGrantWorkspaceTrust !== undefined) {
     context.subscriptions.push(onDidGrantWorkspaceTrust(() => {
+      console.log('onDidGrantWorkspaceTrust');
       languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
       workspace.getConfiguration('xml').update('downloadExternalResources.enabled', true); //set back to default setting
     }));
@@ -148,6 +139,7 @@ function getLanguageClientOptions(
       workspace: {
         didChangeConfiguration: () => {
           languageClient.sendNotification(DidChangeConfigurationNotification.type, { settings: getXMLSettings(logfile, externalXmlSettings) });
+          
           onConfigurationChange();
         }
       }
