@@ -212,8 +212,8 @@ export function getXMLSettings(logfile: string, externalXmlSettings: any): JSON 
     let x = JSON.stringify(configXML); //configXML is not a JSON type
     xml = { "xml": JSON.parse(x) };
   }
-  xml['xml']['logs']['file'] = logfile;
-  xml['xml']['useCache'] = true;
+  //xml['xml']['logs']['file'] = logfile;
+  //xml['xml']['useCache'] = true;
   xml['xml']['format']['trimFinalNewlines'] = workspace.getConfiguration('files').get('trimFinalNewlines', true);
   xml['xml']['format']['trimTrailingWhitespace'] = workspace.getConfiguration('files').get('trimTrailingWhitespace', false);
   xml['xml']['format']['insertFinalNewline'] = workspace.getConfiguration('files').get('insertFinalNewline', false);
